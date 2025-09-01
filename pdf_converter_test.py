@@ -263,7 +263,7 @@ def reduce_invoice():
                 messagebox.showerror("showwarning", error) 
             else:
                 input_Folder=filedialog.askdirectory()
-                output_Folder="C:\Output_PDF\\"
+                output_Folder="D:\Python\Pdf_Manipulation\output_folder\\"
                 count=0
                 files = [file for file in os.listdir(input_Folder) if file.lower().endswith(".pdf")]
                 for file in files:
@@ -274,7 +274,7 @@ def reduce_invoice():
 
                         writeLog("PROCESSING: "+ file)
 
-                        doc_file_path="C:\Output_PDF\\"+file.replace(".pdf","")+".docx"
+                        doc_file_path="D:\Python\Pdf_Manipulation\output_folder\\"+file.replace(".pdf","")+".docx"
                         pdf_path =os.path.join(input_Folder, file)
                         pdftodocx(pdf_path,doc_file_path)
                         font_change(doc_file_path)
@@ -517,9 +517,11 @@ def validate_amount():
             pythoncom.CoInitialize()
             sys.stderr=open("consoleoutput.log","w")
             templates= read_templates("Template/")
+            # print("Template:",templates)
             try:
                 #result1 variable where data extract are   MPF,HMF,Total Entered Value , Total Other Fees,Duty,Other,Total from pdf through YML(regex)
                 result1 = extract_data(browse_file_var,templates=templates) 
+                print("Result1:",result1)
             except Exception as e :
                 writeLog('Error while fetching  data except invoices  '+str(e))
 
@@ -533,9 +535,11 @@ def validate_amount():
                     
                         result1['aa']=  result1['aa'][0:  str(result1['aa']).index("A.")]
                         result['MPF']= float(result1['aa'].split("$")[-1].replace(",",'')) 
+                        print("result['MPF']1:",result['MPF'])
                     else:
                     
                         result['MPF']= float(result1['aa'].split("$")[-1].replace(",",'')) 
+                        print("result['MPF']2:",result['MPF'])
                     if 'A.' in result1['bb']:
                         result1['bb']=  result1['bb'][0:  str(result1['bb']).index("A.")]
                         result1['bb']=  result1['bb'][ str(result1['bb']).index("$") +1: ]
@@ -559,10 +563,13 @@ def validate_amount():
            
             cleaning_data(result1)
 
-            temp1 =read_templates('Template3/')
+            temp1 = read_templates('Template3/')
+            # print("Template3:",temp1)
             try:
                 ## result2 variable where   Invoices details data extracted
                 result2 = extract_data(browse_file_var,templates=temp1)
+                print("Result2:",result2)
+                # print("--------------------------------")
             except Exception as e:
                 writeLog('Error while fetching all invoices details '+str(e))
             
@@ -602,6 +609,8 @@ def validate_amount():
                         for i in range(len(fifth)):
                             fifth[i] = clean(fifth[i])
                         all_stored.extend(fifth)
+                        all_stored=[x for x in all_stored if x!='']
+                        print("fifth1:",all_stored)
 
                         sixth = text[-1].replace('USD','').split()
                         for i in range(len(sixth)):
@@ -611,6 +620,7 @@ def validate_amount():
 
                         all_stored[7] = int(all_stored[7])
                         stored_latest[str(key)] = all_stored
+                        # print("stored_latest:",stored_latest)
                         
                         
                     elif type(result2['separatedboxes'])==list:
@@ -632,6 +642,8 @@ def validate_amount():
                             for i in range(len(fifth)):
                                 fifth[i] = clean(fifth[i])
                             all_stored.extend(fifth)
+                            all_stored=[x for x in all_stored if x!='']
+                            print("fifth2:",all_stored)
 
                             sixth = text[-1].replace('USD','').split()
                             for i in range(len(sixth)):
@@ -639,6 +651,7 @@ def validate_amount():
                             all_stored.extend( sixth)
                             all_stored[7] = int(all_stored[7])
                             stored_latest[str(key)]  = all_stored
+                            # print("stored_latest2:",stored_latest)
                 except KeyError :
                     try:
                         stored_update = {}
@@ -661,6 +674,8 @@ def validate_amount():
                             for i in range(len(fifth)):
                                 fifth[i] = clean(fifth[i])
                             all_stored.extend(fifth)
+                            all_stored=[x for x in all_stored if x!='']
+                            print("fifth3:",all_stored)
 
                             sixth = text[-1].replace('USD','').split()
                             for i in range(len(sixth)):
@@ -691,6 +706,8 @@ def validate_amount():
                                 for i in range(len(fifth)):
                                     fifth[i] = clean(fifth[i])
                                 all_stored.extend(fifth)
+                                all_stored=[x for x in all_stored if x!='']
+                                print("fifth4:",all_stored)
 
                                 sixth = text[-1].replace('USD','').split()
                                 for i in range(len(sixth)):
@@ -710,6 +727,7 @@ def validate_amount():
             def full_invoice(result2):
                 
                 nonlocal stored_latest, clean
+                # print("stored_latest3:",stored_latest)
                 
                 try:
                     if type(result2['check'])==list:
@@ -735,6 +753,8 @@ def validate_amount():
                             for i in range(len(fifth)):
                                 fifth[i] = clean(fifth[i])
                             all_stored.extend(fifth)
+                            print("fifth5:",all_stored)
+                            all_stored=[x for x in all_stored if x!='']
                             sixth = text[-1].replace('USD','').split()
                             for i in range(len(sixth)):
                                 sixth[i] = clean(  sixth[i] ) 
@@ -744,6 +764,7 @@ def validate_amount():
                             all_stored[7] = int(all_stored[7])
                         
                             stored_latest[str(key)] = all_stored
+                        # print("stored_latest:",stored_latest)
                     elif type(result2['check'])==str:
                         all_stored = []
                         text = str(result2['check']).split("\n")
@@ -762,6 +783,9 @@ def validate_amount():
                         for i in range(len(fifth)):
                             fifth[i] = clean(fifth[i])
                         all_stored.extend(fifth)
+                        print("fifth6:",all_stored)
+                        all_stored=[x for x in all_stored if x!='']
+                        # print("fifth2:",all_stored)
 
                         sixth = text[-1].replace('USD','').split()
                         for i in range(len(sixth)):
@@ -773,6 +797,8 @@ def validate_amount():
                         # if '2323200853' in var:
                         #     print(all_stored)
                         stored_latest[str(key)] = all_stored
+                    # print("stored_latest1:",stored_latest)
+
                 except KeyError :
                         
                     
@@ -801,6 +827,8 @@ def validate_amount():
                                     fifth[i] = clean(fifth[i])
                                 
                                 all_stored.extend(fifth)
+                                all_stored=[x for x in all_stored if x!='']
+                                print("fifth7:",all_stored)
                                 sixth = text[-1].replace('USD','').split()
                                 for i in range(len(sixth)):
                                     sixth[i] = clean(  sixth[i] ) 
@@ -832,6 +860,8 @@ def validate_amount():
                             for i in range(len(fifth)):
                                 fifth[i] = clean(fifth[i])
                             all_stored.extend(fifth)
+                            all_stored=[x for x in all_stored if x!='']
+                            print("fifth8:",all_stored)
 
                             sixth = text[-1].replace('USD','').split()
                             for i in range(len(sixth)):
@@ -874,6 +904,8 @@ def validate_amount():
                                 for i in range(len(fifth)):
                                     fifth[i] = clean(fifth[i])
                                 all_stored.extend(fifth)
+                                all_stored=[x for x in all_stored if x!='']
+                                print("fifth9:",all_stored)
 
                                 checking_stored[str(key)] = all_stored
                         elif  type(result2['missingboxes'])==str:
@@ -897,6 +929,10 @@ def validate_amount():
                             for i in range(len(fifth)):
                                 fifth[i] = clean(fifth[i])
                             all_stored.extend(fifth)
+                            print("fifth10:",all_stored)
+                            all_stored=[x for x in all_stored if x!='']
+                            # print("All_Stored:",all_stored)
+
                             checking_stored[str(key)] = all_stored
                     except KeyError: 
                         try:
@@ -922,6 +958,8 @@ def validate_amount():
                                     for i in range(len(fifth)):
                                         fifth[i] = clean(fifth[i])
                                     all_stored.extend(fifth)
+                                    all_stored=[x for x in all_stored if x!='']
+                                    print("fifth11:",all_stored)
 
                                 stored_update[str(key)] = all_stored
                             elif  type(result2['missingboxes2'])==str:
@@ -946,6 +984,8 @@ def validate_amount():
                                 for i in range(len(fifth)):
                                     fifth[i] = clean(fifth[i])
                                 all_stored.extend(fifth)
+                                all_stored=[x for x in all_stored if x!='']
+                                print("fifth12:",all_stored)
                                 stored_update[str(key)] = all_stored
                             checking_stored.update(stored_update)
                         except :
@@ -959,19 +999,29 @@ def validate_amount():
 
                         
                 full_invoice(result2)
+                # print("Full_Invoice:",Full_Invoice)
 
                 missing(result2)
+                # print("missed:",missed)
 
                 for key , value in checking_stored.items():
+                    print("Checking_Stored:",checking_stored)
                     
                     if key not in list(stored_latest.keys()):
+                        print("stored_latest_key:",stored_latest)
+
                         
                         stored_latest[key] = value
+                # print("stored_latest:",stored_latest)
                         
 
                 stored_latest = dict(sorted(stored_latest.items(), key=lambda x: int(x[0])))
-                stored_latest = {k: [0.0 if x == 'FREE' else x for x in v] for k, v in stored_latest.items()}
-                print("stored_latest:",stored_latest)
+
+                print("stored_latest1:",stored_latest)
+                # stored_latest = {k: [0.0 if x == 'FREE' else x for x in v] for k, v in stored_latest.items()}
+                stored_latest = {k: [0.0 if x == 'FREE' else x for x in v if x != ''] for k, v in stored_latest.items()}
+
+                # print("stored_latest2:",stored_latest)
 
                 
                 list_which_arepaired = []
@@ -979,7 +1029,7 @@ def validate_amount():
                 for key, value in  stored_latest.items():
                     if len(value)==7:
                         dict_value = {  key : value ,  str(int(key)+1): stored_latest[str(int(key)+1)]  }
-                        # print("dict_value:",dict_value)
+                        print("dict_value:",dict_value)
                         list_which_arepaired.append(str(stored_latest[str(int(key)+1)][7]))
                         paired_stored[str(pair)] = dict_value
                         pair+=1 
@@ -997,6 +1047,7 @@ def validate_amount():
 
             ## these variables  are for totaling
             MPF_total = float() ; HMF_total=float();Total_Entered_Value=float(); Total_Duty = float()
+            print("MPF_total4:",MPF_total)
 
             # print("Total_Entered_Value:",Total_Entered_Value)
 
@@ -1025,9 +1076,9 @@ def validate_amount():
                 ## copying work 
                 for key,value in stored_latest.items():
                     # print("keys:",key)
-                    # print("dict_of_ALL:",key,value)
+                    print("dict_of_ALL:",key,value)
                     if len(value)>7:
-                        stored[str(value[7])] = value
+                        stored[str(int(value[7]))] = value
                 # print("stored:",stored)
                     
                 
@@ -1038,13 +1089,21 @@ def validate_amount():
             try:
                 ## fetching both available and not available invoices 
                 list_comm_invoice = list(stored_info_txt.keys())
+                print("list_comm_invoice:",list_comm_invoice)
                 available_invoices=[]
                 not_available_invoices = []
                 for key, value   in stored.items():
+                    # print("Stored_Items:",stored)
                     if key in list_comm_invoice:
+                       
                         available_invoices.append(key)
+                        print("available_invoices:",available_invoices)
+
+
                     else:
                         not_available_invoices.append(key)
+                        print("not_available_invoices:",not_available_invoices)
+
                 #-----
             except  Exception as e:
                 writeLog('Error while fetching both available and not available invoices '+str(e))
@@ -1100,6 +1159,8 @@ def validate_amount():
                                 hmfrate = list_value[5]
                                 hmfcal = list_value[6]
                                 MPF_total+= mpfcal
+                                print("MPF_total3:",MPF_total)
+
                                 HMF_total+=hmfcal
                                 Total_Duty+= ratecal
                                 Total_Entered_Value+=last_entered_value
@@ -1110,25 +1171,25 @@ def validate_amount():
                                     if int(pythonratecal)+1==int(ratecal):pass
                                     else:
                                         issue = True
-                                        msg = f'This calculated value {ratecal}  not matched with  Invoice value {entered_at32} % rate {rate1}'
+                                        msg = f'This calculated value1 {ratecal}  not matched with  Invoice value {entered_at32} % rate {rate1}'
                                         forprint[1].append(msg)
                                 
                                 if int(pythonmpfcal)!=int(mpfcal):
                                     if int(pythonmpfcal)+1==int(mpfcal):pass
                                     else:
                                         issue = True
-                                        msg = f'This calculated value {mpfcal}  not matched with  Invoice value {entered_at32} % rate {mpfrate}'
+                                        msg = f'This calculated value2 {mpfcal}  not matched with  Invoice value {entered_at32} % rate {mpfrate}'
                                         forprint[1].append(msg)
                                 
                                 if int(pythonhmfcal)!=int(hmfcal):
                                     if int(pythonhmfcal)+1==int(hmfcal):pass
                                     else:
                                         issue = True
-                                        msg = f'This calculated value {hmfcal}  not matched with  Invoice value {entered_at32} % rate {hmfrate}'
+                                        msg = f'This calculated value3 {hmfcal}  not matched with  Invoice value {entered_at32} % rate {hmfrate}'
                                         forprint[1].append(msg)
                             elif len(stored[value])==11:
                                 list_value = stored[value]
-                                # print("list_value:",list_value)
+                                print("list_value:",list_value)
                                 Invoice_Value  = list_value[-3]
                                 
                                 last_entered_value = list_value[-1]
@@ -1144,6 +1205,7 @@ def validate_amount():
                                         forprint[1].append('Entered Value not matched2')
                                 
                                 entered_at32 = list_value[0]
+                                print("entered_at32:",entered_at32)
                                 if int(entered_at32)!=int(last_entered_value):
                                     issue = True
                                     forprint[1].append('Entered Value not matched which is at 32 A.Entered Value  ')
@@ -1151,9 +1213,12 @@ def validate_amount():
                                 ratecal= list_value[2]
                                 mpfrate = list_value[3]
                                 mpfcal = list_value[4]
+
                                 hmfrate = list_value[5]
+                                print("hmfrate:",hmfrate)
                                 hmfcal = list_value[6]
                                 MPF_total+= mpfcal
+                                print("MPF_total2:",MPF_total)
                                 HMF_total+=hmfcal
                                 Total_Duty+= ratecal
                                 Total_Entered_Value+=last_entered_value
@@ -1163,21 +1228,23 @@ def validate_amount():
                                     if int(pythonratecal)+1==int(ratecal):pass
                                     else:
                                         issue = True
-                                        msg = f'This calculated value {ratecal}  not matched with  Invoice value {entered_at32} % rate {rate1}'
+                                        msg = f'This calculated value4 {ratecal}  not matched with  Invoice value {entered_at32} % rate {rate1}'
                                         forprint[1].append(msg)
                                 
                                 if int(pythonmpfcal)!=int(mpfcal):
                                     if int(pythonmpfcal)+1==int(mpfcal):pass
                                     else:
                                         issue = True
-                                        msg = f'This calculated value {mpfcal}  not matched with  Invoice value {entered_at32} % rate {mpfrate}'
+                                        msg = f'This calculated value5 {mpfcal}  not matched with  Invoice value {entered_at32} % rate {mpfrate}'
                                         forprint[1].append(msg)
                                 
                                 if int(pythonhmfcal)!=int(hmfcal):
+                                    print("pythonhmfcal:",pythonhmfcal)
+                                    print("hmfcal:",hmfcal)
                                     if int(pythonhmfcal)+1==int(hmfcal):pass
                                     else:
                                         issue = True
-                                        msg = f'This calculated value {hmfcal}  not matched with  Invoice value {entered_at32} % rate {hmfrate}'
+                                        msg = f'This calculated value6 {hmfcal}  not matched with  Invoice value {entered_at32} % rate {hmfrate}'
                                         forprint[1].append(msg)
 
 
@@ -1268,6 +1335,7 @@ def validate_amount():
                             pythonhmfcalsecond = float(enteredvaue32_second*hmfratesecond/100)
 
                             MPF_total+= (mpfcalfirst+ mpfcalsecond  )
+                            print("MPF_total1:",MPF_total)
                             HMF_total+= (hmfcalfirst+hmfcalsecond)
                             Total_Duty+=( rate1calfirst+rate1calsecond)
                             Total_Entered_Value+= last_entered_value
@@ -1279,7 +1347,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {rate1calfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {rat1first}'
+                                    msg = f'This calculated value7 {rate1calfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {rat1first}'
                                     forprint[1].append(msg)
                                     pass
                             if int(pythonmpfcalfirst)!=int(mpfcalfirst):
@@ -1287,14 +1355,14 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {mpfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {mpfratefirst}'
+                                    msg = f'This calculated value8 {mpfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {mpfratefirst}'
                                     forprint[1].append(msg)
                             if int(pythonhmfcalfirst)!=int(hmfcalfirst):
                                 if int(pythonhmfcalfirst)+1==int(hmfcalfirst):
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {hmfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {hmfratefirst}'
+                                    msg = f'This calculated value10 {hmfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {hmfratefirst}'
                                     forprint[1].append(msg)
 
 
@@ -1303,7 +1371,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {rate1calsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {rat1second}'
+                                    msg = f'This calculated value11 {rate1calsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {rat1second}'
                                     forprint[1].append(msg)
                             
                             if int(pythonmpfcalsecond)!=int(mpfcalsecond):
@@ -1311,7 +1379,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {mpfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {mpfratesecond}'
+                                    msg = f'This calculated value12 {mpfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {mpfratesecond}'
                                     forprint[1].append(msg)
                             if int(pythonhmfcalsecond)!=int(hmfcalsecond):
                                 if int(pythonhmfcalsecond)+1==int(hmfcalsecond):
@@ -1319,7 +1387,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {hmfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {hmfratesecond}'
+                                    msg = f'This calculated value13 {hmfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {hmfratesecond}'
                                     forprint[1].append(msg)
                             
 
@@ -1384,6 +1452,7 @@ def validate_amount():
                             pythonhmfcalsecond = float(enteredvaue32_second*hmfratesecond/100)
 
                             MPF_total+= (mpfcalfirst+ mpfcalsecond  )
+                            print("MPF_total1:",MPF_total)
                             HMF_total+= (hmfcalfirst+hmfcalsecond)
                             Total_Duty+=( rate1calfirst+rate1calsecond)
                             Total_Entered_Value+= last_entered_value
@@ -1395,7 +1464,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {rate1calfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {rat1first}'
+                                    msg = f'This calculated value13 {rate1calfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {rat1first}'
                                     forprint[1].append(msg)
                                     pass
                             if int(pythonmpfcalfirst)!=int(mpfcalfirst):
@@ -1403,14 +1472,14 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {mpfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {mpfratefirst}'
+                                    msg = f'This calculated value14 {mpfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {mpfratefirst}'
                                     forprint[1].append(msg)
                             if int(pythonhmfcalfirst)!=int(hmfcalfirst):
                                 if int(pythonhmfcalfirst)+1==int(hmfcalfirst):
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {hmfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {hmfratefirst}'
+                                    msg = f'This calculated value15 {hmfcalfirst}  not matched with  Invoice value {enteredvaue32_first} % rate {hmfratefirst}'
                                     forprint[1].append(msg)
 
 
@@ -1419,7 +1488,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {rate1calsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {rat1second}'
+                                    msg = f'This calculated value16 {rate1calsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {rat1second}'
                                     forprint[1].append(msg)
                             
                             if int(pythonmpfcalsecond)!=int(mpfcalsecond):
@@ -1427,7 +1496,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {mpfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {mpfratesecond}'
+                                    msg = f'This calculated value17 {mpfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {mpfratesecond}'
                                     forprint[1].append(msg)
                             if int(pythonhmfcalsecond)!=int(hmfcalsecond):
                                 if int(pythonhmfcalsecond)+1==int(hmfcalsecond):
@@ -1435,7 +1504,7 @@ def validate_amount():
                                     pass
                                 else:
                                     issue = True
-                                    msg = f'This calculated value {hmfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {hmfratesecond}'
+                                    msg = f'This calculated value18 {hmfcalsecond}  not matched with  Invoice value {enteredvaue32_second} % rate {hmfratesecond}'
                                     forprint[1].append(msg)
                             
 
@@ -1465,7 +1534,8 @@ def validate_amount():
                 try:
                     ## Total MPF checking 
                     if pdf_total_MPF!= int(MPF_total):
-                        # print("MPF_total:",MPF_total)
+                        print("pdf_total_MPF:",pdf_total_MPF)
+                        print("MPF_total:",MPF_total)
                         # print("pdf_total_MPF:",pdf_total_MPF)
                         text_box.insert(tk.END, f"Total MPF not matched1 " +"\n")
                         problem_count += 1
@@ -1669,6 +1739,7 @@ if __name__=="__main__":
 
     # Execute Tkinter
     root.mainloop()
-    
+
+
 #pyinstaller --onefile --icon=content/SIPL.ico  pdf_converter.py
 #pyinstaller --onefile --icon=content/SIPL.ico --noconsole  pdf_converter.py
